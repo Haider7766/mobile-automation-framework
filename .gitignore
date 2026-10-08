@@ -1,0 +1,20 @@
+node_modules/
+
+# Secrets — never commit
+.env
+.env.*
+!.env.example
+.auth/
+
+# Test output
+reports/
+
+# App builds (large binaries) — fetch with `npm run get:app:android` or provide your own
+apps/*
+!apps/.gitkeep
+
+# Editor / OS
+.idea/
+.vscode/
+.DS_Store
+*.log
