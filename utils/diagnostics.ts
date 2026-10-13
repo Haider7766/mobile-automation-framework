@@ -12,19 +12,24 @@ export function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
 }
 
+/** Characters from the Unicode "private use" areas — icon fonts draw their icons with these. */
+const ICON_GLYPHS = /[\uE000-\uF8FF]|[\u{F0000}-\u{10FFFD}]/gu;
+
 /** Unique values of one XML attribute (e.g. content-desc) found in a page source. */
-export function extractAttribute(source: string, attribute: string): string[] {
+export function extractAttribute(source: string, attribute: string, maxLength = 60): string[] {
   const pattern = new RegExp(`\\s${attribute}="([^"]*)"`, 'g');
   const values = new Set<string>();
   for (const match of source.matchAll(pattern)) {
     const value = match[1]
+      .replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code)))
       .replace(/&quot;/g, '"')
-      .replace(/&amp;/g, '&')
       .replace(/&lt;/g, '<')
       .replace(/&gt;/g, '>')
-      .replace(/&#10;/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(ICON_GLYPHS, '') // icons are not readable text
+      .replace(/\s+/g, ' ')
       .trim();
-    if (value) values.add(value.length > 60 ? `${value.slice(0, 57)}...` : value);
+    if (value) values.add(value.length > maxLength ? `${value.slice(0, maxLength - 3)}...` : value);
   }
   return [...values];
 }
@@ -45,9 +50,9 @@ export async function saveFailureScreenshot(title: string): Promise<void> {
 }
 
 /**
- * Prints what the device is really showing when a test fails: which app is in front, the
- * accessibility ids and the visible texts. A wrong locator can then be fixed from the
- * console output alone. The full page source is also saved under reports/page-source/.
+ * Prints what the device is really showing: which app is in front, the accessibility ids,
+ * the resource ids and the visible texts. Locators can then be written from the console
+ * output alone. The full page source is also saved under reports/page-source/.
  */
 export async function logScreenSummary(title: string): Promise<void> {
   try {
@@ -64,6 +69,7 @@ export async function logScreenSummary(title: string): Promise<void> {
         `--- Screen diagnostics: ${title} ---`,
         `apps on screen    : ${show(extractAttribute(source, 'package'))}`,
         `accessibility ids : ${show(extractAttribute(source, 'content-desc'))}`,
+        `resource ids      : ${show(extractAttribute(source, 'resource-id', 120))}`,
         `visible texts     : ${show(extractAttribute(source, 'text'))}`,
         '---',
       ].join('\n'),
