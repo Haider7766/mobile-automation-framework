@@ -15,7 +15,8 @@
     "doctor:ios": "appium driver doctor xcuitest",
     "test:android": "wdio run config/wdio.android.conf.ts",
     "test:ios": "wdio run config/wdio.ios.conf.ts",
-    "test:web": "wdio run config/wdio.web.conf.ts"
+    "install:app": "node scripts/install-app.mjs"
+
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",

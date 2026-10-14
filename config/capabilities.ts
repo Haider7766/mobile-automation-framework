@@ -30,15 +30,26 @@ export function androidCapabilities(): WebdriverIO.Capabilities {
     platformName: 'Android',
     'appium:automationName': 'UiAutomator2',
     'appium:deviceName': process.env.ANDROID_DEVICE_NAME || 'Android Emulator',
-    'appium:app': resolveApp('ANDROID_APP', 'android.wdio.native.app.v2.2.0.apk', 'npm run get:app:android'),
     'appium:autoGrantPermissions': true,
     'appium:newCommandTimeout': 240,
-        // Turns window animations off while the session runs (restored automatically afterwards).
+    // Turns window animations off while the session runs (restored automatically afterwards).
     'appium:disableWindowAnimation': true,
     // Emulators can be slow on first boot — be generous.
     'appium:adbExecTimeout': 60_000,
     'appium:uiautomator2ServerInstallTimeout': 90_000,
   };
+  if (process.env.ANDROID_APP_PACKAGE) {
+    // The build is ALREADY installed on the device: Appium only launches it, it never installs.
+    // Install a new build once with:  npm run install:app
+    caps['appium:appPackage'] = process.env.ANDROID_APP_PACKAGE;
+  } else {
+    // Appium installs the APK itself (it skips the install when the same version is there).
+    caps['appium:app'] = resolveApp('ANDROID_APP', 'android.wdio.native.app.v2.2.0.apk', 'npm run get:app:android');
+    // Reinstall even when the version code is the same — for one run after a new build.
+    if (process.env.ANDROID_FORCE_INSTALL === 'true') caps['appium:enforceAppInstall'] = true;
+  }
+  // Experiment/diagnostic switch: keep the app's data between sessions (default is a reset).
+  if (process.env.ANDROID_NO_RESET === 'true') caps['appium:noReset'] = true;
   if (process.env.ANDROID_PLATFORM_VERSION) caps['appium:platformVersion'] = process.env.ANDROID_PLATFORM_VERSION;
   if (process.env.ANDROID_UDID) caps['appium:udid'] = process.env.ANDROID_UDID;
   return caps as WebdriverIO.Capabilities;

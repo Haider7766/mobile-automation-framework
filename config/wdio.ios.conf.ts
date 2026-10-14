@@ -8,7 +8,7 @@ const APPIUM_PORT = Number(process.env.APPIUM_PORT || 4723);
 // specs and page objects run unchanged — only the capabilities differ.
 export const config: WebdriverIO.Config = {
   ...sharedConfig,
-  specs: [path.join(ROOT, 'tests/mobile/**/*.spec.ts')],
+  specs: [path.join(ROOT, 'tests/**/*.spec.ts')],
 
   hostname: '127.0.0.1',
   port: APPIUM_PORT,

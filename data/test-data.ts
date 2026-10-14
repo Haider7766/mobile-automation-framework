@@ -1,17 +1,21 @@
-import { optionalEnv, requireEnv } from '../utils/env';
+import { signupData } from './signup.data';
+import { neoposLoginData } from './neopos-login.data';
+import { neoposDashboardData } from './neopos-dashboard.data';
+import { neoposSaleData } from './neopos-sale.data';
 
 /**
  * Static test data — the equivalent of a Cypress fixture file.
+ * One file per screen under data/, collected here so tests import a single object.
  * Secrets are read from the environment (see .env.example), never hardcoded.
  */
 export const TestData = {
-  mobile: {
-    get email() { return requireEnv('MOBILE_EMAIL'); },
-    get password() { return requireEnv('MOBILE_PASSWORD'); },
+  noteflow: {
+    signup: signupData,
   },
-  web: {
-    baseUrl: optionalEnv('WEB_BASE_URL', 'https://www.saucedemo.com'),
-    get username() { return requireEnv('WEB_USERNAME'); },
-    get password() { return requireEnv('WEB_PASSWORD'); },
+  neopos: {
+    login: neoposLoginData,
+    dashboard: neoposDashboardData,
+    sale: neoposSaleData,
   },
+
 };

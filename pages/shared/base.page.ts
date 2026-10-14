@@ -20,6 +20,26 @@ export default abstract class BasePage {
     await element.waitForDisplayed();
     await element.setValue(value);
   }
+  /** Wait until the element is visible, then return its text. */
+  protected async getText(selector: string): Promise<string> {
+    const element = $(selector);
+    await element.waitForDisplayed();
+    return element.getText();
+  }
+  /**
+   * Tap an element only if it shows up within `timeout` ms — for optional pop-ups that appear
+   * on some devices/first launches but not always. Returns whether it was tapped.
+   */
+  async tapIfShown(selector: string, timeout = 3000): Promise<boolean> {
+    const element = $(selector);
+    try {
+      await element.waitForDisplayed({ timeout });
+    } catch {
+      return false;
+    }
+    await element.click();
+    return true;
+  }
 
   /** Wait until an element is shown (or, with shown=false, gone). */
   async waitForShown(selector: string, shown = true): Promise<void> {
