@@ -4,4 +4,4 @@ export const NeoposSaleLocators = {
   amount: 'id=com.croem.pospagoandroid:id/tv_sale_amount',
   saleType: 'id=com.croem.pospagoandroid:id/tv_sale_type',
   homeButton: 'id=com.croem.pospagoandroid:id/img_home',
-} as const;
+} as const
